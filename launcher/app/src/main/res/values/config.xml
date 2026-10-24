@@ -192,6 +192,17 @@
          theme's config.json ("weather_lat", "weather_lon"). -->
     <string name="weather_lat" translatable="false"></string>
     <string name="weather_lon" translatable="false"></string>
+    <!-- A second clock for another city: name, IANA zone id, coordinates. Any of the four empty keeps
+         it off. Weather for it (if weather_lat/weather_lon are also set) uses the same icons and
+         format as the main chip. Can also be set from a theme's config.json. -->
+    <string name="second_city_label" translatable="false"></string>
+    <string name="second_city_tz" translatable="false"></string>
+    <string name="second_city_lat" translatable="false"></string>
+    <string name="second_city_lon" translatable="false"></string>
+    <!-- A short line under the date, picked deterministically for the calendar day from
+         res/raw/thoughts.json so it is the same all day and the same for everyone on that day.
+         true by default; can also be set with "show_thought" in a theme's config.json. -->
+    <bool name="show_thought">true</bool>
     <!-- The dock as its own row: a lighter band, no names under the tiles, parked low on the screen with the top
          shelf above it. false makes the dock apps simply the first tiles of one plain grid (still in dock_apps
          order, no empty slots), with names under every tile and the glow behind every focused tile. -->

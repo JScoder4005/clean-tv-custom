@@ -7,4 +7,7 @@
     <string name="font_light" translatable="false">@font/outfit_light</string>
     <string name="font_extralight" translatable="false">@font/outfit_extralight</string>
     <string name="font_medium" translatable="false">@font/outfit_medium</string>
+    <!-- The clock only: an elegant serif display face, not Outfit. -->
+    <string name="font_clock" translatable="false">@font/cormorant_garamond</string>
+    <string name="font_thought" translatable="false">@font/cormorant_garamond_italic</string>
 </resources>

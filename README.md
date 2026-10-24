@@ -23,10 +23,18 @@ TV: TCL G07 (Google TV, Android 11).
   without a background box.
 - **Taglines** — an optional short line under a tile's name, set per app in a theme. Off by default,
   costs nothing when unused.
-- **Weather chip** — current conditions next to the clock, from Open-Meteo (no account or key), set
-  by coordinates in the theme config.
+- **Weather chip** — current conditions, today's high/low, and a 9-icon condition set (clear/cloudy/
+  rain/snow/fog/thunder, day and night variants) next to the clock, from Open-Meteo (no account or
+  key), set by coordinates in the theme config.
+- **Second city clock** — another city's local time and weather in the header, for anywhere else you
+  care about, config-driven (label, timezone, coordinates).
+- **Thought of the day** — a short line under the date, picked deterministically per calendar day
+  from a bundled quote pool, same for everyone on that day.
+- **Spotify (or any media session) now playing** — track name, album art and play/pause/next/previous
+  in the header, driven by Android's MediaSession API (no notification is ever read).
 - **Icon-only top bar** — Wi-Fi / Bluetooth / Inputs / Settings collapse to small round icon buttons
   instead of full labeled pills, for a cleaner header.
+- **Serif display clock** (Cormorant Garamond) in place of the default sans clock face.
 
 ## Layout
 

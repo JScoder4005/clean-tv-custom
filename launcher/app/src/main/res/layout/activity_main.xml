@@ -202,9 +202,9 @@
                         android:format12Hour="h:mm"
                         android:format24Hour="HH:mm"
                         android:textColor="#FFFFFFFF"
-                        android:textSize="52sp"
-                        android:fontFamily="@string/font_light"
-                        android:letterSpacing="-0.04"
+                        android:textSize="56sp"
+                        android:fontFamily="@string/font_clock"
+                        android:letterSpacing="-0.02"
                         android:includeFontPadding="false" />
 
                     <TextClock
@@ -237,9 +237,9 @@
 
                         <ImageView
                             android:id="@+id/weatherIcon"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginEnd="4dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginEnd="5dp"
                             android:contentDescription="@null" />
 
                         <TextView
@@ -249,6 +249,15 @@
                             android:textColor="#D9FFFFFF"
                             android:textSize="16sp"
                             android:fontFamily="@string/font_medium" />
+
+                        <TextView
+                            android:id="@+id/weatherRange"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:textColor="#99FFFFFF"
+                            android:textSize="13sp"
+                            android:fontFamily="@string/font_regular" />
                     </LinearLayout>
 
                     <View
@@ -301,6 +310,21 @@
                             android:textAllCaps="true" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <!-- show_thought: a day-stable line from res/raw/thoughts.json. Gone when off or unread. -->
+                <TextView
+                    android:id="@+id/thought"
+                    android:gravity="left"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="16sp"
+                    android:fontFamily="@string/font_thought"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -381,6 +405,120 @@
                     style="@style/TopButton"
                     android:text="@string/settings"
                     android:drawableStart="@drawable/ic_settings"
+                    android:nextFocusDown="@+id/grid" />
+            </LinearLayout>
+
+            <!-- second_city_*: another city's time and weather, below the top buttons. Gone until all
+                 four second_city_* keys are set and the first weather fetch for it succeeds. -->
+            <LinearLayout
+                android:id="@+id/secondCityBlock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/topButtons"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/secondCityLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.1"
+                    android:textAllCaps="true"
+                    android:fontFamily="@string/font_medium" />
+
+                <TextClock
+                    android:id="@+id/secondCityClock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:format12Hour="h:mm a"
+                    android:format24Hour="HH:mm"
+                    android:textColor="#D9FFFFFF"
+                    android:textSize="16sp"
+                    android:fontFamily="@string/font_medium" />
+
+                <ImageView
+                    android:id="@+id/secondCityWeatherIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:visibility="gone"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/secondCityWeatherTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textColor="#D9FFFFFF"
+                    android:textSize="13sp"
+                    android:visibility="gone"
+                    android:fontFamily="@string/font_regular" />
+            </LinearLayout>
+
+            <!-- MEDIA_WIDGET=1 build-and-install.sh: a small art thumbnail, the track name and
+                 play/pause/next/prev for whatever's playing (NowPlaying). Lives in the header's right
+                 column, below the weather/second-city stack, never the dock's layout flow — so it can
+                 never push the dock down or collide with the top shelf (showHero) above it. Gone until
+                 a session is found. -->
+            <LinearLayout
+                android:id="@+id/nowPlayingCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/secondCityBlock"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/nowPlayingArt"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/nowPlayingTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:maxWidth="200dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textColor="#D9FFFFFF"
+                    android:textSize="13sp"
+                    android:fontFamily="@string/font_regular" />
+
+                <TextView
+                    android:id="@+id/btnMediaPrev"
+                    style="@style/TopButtonIcon"
+                    android:contentDescription="@string/media_previous"
+                    android:drawableStart="@drawable/ic_media_prev"
+                    android:nextFocusDown="@+id/grid" />
+
+                <TextView
+                    android:id="@+id/btnMediaPlayPause"
+                    style="@style/TopButtonIcon"
+                    android:layout_marginStart="2dp"
+                    android:contentDescription="@string/media_play_pause"
+                    android:drawableStart="@drawable/ic_media_play"
+                    android:nextFocusDown="@+id/grid" />
+
+                <TextView
+                    android:id="@+id/btnMediaNext"
+                    style="@style/TopButtonIcon"
+                    android:layout_marginStart="2dp"
+                    android:contentDescription="@string/media_next"
+                    android:drawableStart="@drawable/ic_media_next"
                     android:nextFocusDown="@+id/grid" />
             </LinearLayout>
         </RelativeLayout>

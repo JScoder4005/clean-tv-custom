@@ -74,6 +74,10 @@ final class Config {
     final boolean showTaglines;
     /** Open-Meteo coordinates for the weather chip (config.xml, weather_lat/weather_lon); empty hides it. */
     final String weatherLat, weatherLon;
+    /** A second city's clock and weather (config.xml, second_city_*); any one empty hides it. */
+    final String secondCityLabel, secondCityTz, secondCityLat, secondCityLon;
+    /** A daily line under the date, from res/raw/thoughts.json (config.xml, show_thought). */
+    final boolean showThought;
     final String sourcePanelService;
     final String sourcePanelAction;
     /** One int extra for the source panel, "name=value" (config.xml source_panel_extra); empty for none. */
@@ -205,7 +209,9 @@ final class Config {
                    List<RaceWeekend.Race> raceCalendar, boolean cinematicHome, boolean ambientGlow, boolean appGlow, int homeIdleClockMinutes,
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding,
-                   Map<String, String> appTaglines, boolean showTaglines, String weatherLat, String weatherLon) {
+                   Map<String, String> appTaglines, boolean showTaglines, String weatherLat, String weatherLon,
+                   String secondCityLabel, String secondCityTz, String secondCityLat, String secondCityLon,
+                   boolean showThought) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -282,6 +288,11 @@ final class Config {
         this.showTaglines = showTaglines;
         this.weatherLat = weatherLat;
         this.weatherLon = weatherLon;
+        this.secondCityLabel = secondCityLabel;
+        this.secondCityTz = secondCityTz;
+        this.secondCityLat = secondCityLat;
+        this.secondCityLon = secondCityLon;
+        this.showThought = showThought;
     }
 
     /** A known glow_style, or radial (the default) for anything else. */
@@ -342,6 +353,11 @@ final class Config {
         String vpn = res.getString(R.string.vpn_app).trim();
         String weatherLat = res.getString(R.string.weather_lat).trim();
         String weatherLon = res.getString(R.string.weather_lon).trim();
+        String secondCityLabel = res.getString(R.string.second_city_label).trim();
+        String secondCityTz = res.getString(R.string.second_city_tz).trim();
+        String secondCityLat = res.getString(R.string.second_city_lat).trim();
+        String secondCityLon = res.getString(R.string.second_city_lon).trim();
+        boolean showThought = res.getBoolean(R.bool.show_thought);
         boolean homeSettings = res.getBoolean(R.bool.show_home_settings_shortcut);
         boolean showStats = res.getBoolean(R.bool.show_stats);
         boolean library = res.getBoolean(R.bool.app_library);
@@ -416,6 +432,11 @@ final class Config {
             vpn = string(json, "vpn_app", vpn);
             weatherLat = string(json, "weather_lat", weatherLat);
             weatherLon = string(json, "weather_lon", weatherLon);
+            secondCityLabel = string(json, "second_city_label", secondCityLabel);
+            secondCityTz = string(json, "second_city_tz", secondCityTz);
+            secondCityLat = string(json, "second_city_lat", secondCityLat);
+            secondCityLon = string(json, "second_city_lon", secondCityLon);
+            showThought = bool(json, "show_thought", showThought);
             homeSettings = bool(json, "show_home_settings_shortcut", homeSettings);
             showStats = bool(json, "show_stats", showStats);
             library = bool(json, "app_library", library);
@@ -490,7 +511,8 @@ final class Config {
                 wallpapers, rotationMinutes, wallpaperDim, dockOpacity, wallpaperOrder, applied,
                 festival, inputKeycodes, appKeys, stockHomeRedirect, json == null ? Collections.emptyList() : raceCalendar(json), cinematic, ambientGlow, appGlow,
                 Math.max(0, idleClockMinutes), keyFilter, dockGlass, glowStyle, wallpaperCaptions, handleViewInputs, tileMenu, dockEvenPadding,
-                packageMap(appTaglines), showTaglines, weatherLat, weatherLon);
+                packageMap(appTaglines), showTaglines, weatherLat, weatherLon,
+                secondCityLabel, secondCityTz, secondCityLat, secondCityLon, showThought);
     }
 
     /**

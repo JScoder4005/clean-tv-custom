@@ -207,5 +207,19 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/input_key_service" />
         </service>
+
+        <!-- Unlocks MediaSessionManager.getActiveSessions() for the now-playing widget: no notification
+             is ever read, the service exists only because that API requires an enabled listener
+             component. Opt-in: MEDIA_WIDGET=1 build-and-install.sh grants it with `cmd notification
+             allow_listener`, the adb-friendly equivalent of the Settings > Notification access toggle. -->
+        <service
+            android:name=".MediaListenerService"
+            android:label="@string/app_name"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

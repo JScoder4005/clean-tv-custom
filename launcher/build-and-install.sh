@@ -201,4 +201,11 @@ if [ "${HOME_KEY_SERVICE:-0}" = 1 ]; then enable_service HomeKeyService; fi
 if [ "${RESTORE_KEY_SERVICES:-0}" = 1 ]; then
   "$PY" -I ../tools/tv.py "pm grant com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS && echo restore-granted"
 fi
+# MEDIA_WIDGET=1: the now-playing/transport-control pills (NowPlaying) need an enabled notification
+# listener, same requirement as the Settings > Notification access toggle; `cmd notification
+# allow_listener` is its adb-friendly equivalent and, like the accessibility services above, is
+# switched off again on every reinstall.
+if [ "${MEDIA_WIDGET:-0}" = 1 ]; then
+  "$PY" -I ../tools/tv.py "cmd notification allow_listener com.gathin.tvhome/.MediaListenerService && echo media-widget-granted"
+fi
 echo "Installed. Press Home on the remote to see it."

@@ -1,5 +1,10 @@
 Copyright 2021 The Outfit Project Authors (https://github.com/Outfitio/Outfit-Fonts)
 
+Cormorant Garamond (res/font/cormorant_garamond.ttf, cormorant_garamond_italic.ttf): variable fonts
+CormorantGaramond[wght].ttf and CormorantGaramond-Italic[wght].ttf, unmodified, from
+https://github.com/google/fonts/tree/main/ofl/cormorantgaramond. Copyright 2015 the Cormorant
+Project Authors (github.com/CatharsisFonts/Cormorant). Same license, below.
+
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
 https://scripts.sil.org/OFL

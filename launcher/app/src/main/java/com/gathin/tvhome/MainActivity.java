@@ -66,6 +66,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.PopupWindow;
+import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -167,10 +168,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private View weatherBlock;
     private ImageView weatherIcon;
     private TextView weatherTemp;
+    private TextView weatherRange;
     private boolean weatherEnabled;
     private String weatherLat, weatherLon;
     private HandlerThread weatherThread;
     private volatile Handler weatherBg;
+    private View secondCityBlock;
+    private TextView secondCityLabel;
+    private TextClock secondCityClock;
+    private ImageView secondCityWeatherIcon;
+    private TextView secondCityWeatherTemp;
+    private boolean secondCityEnabled;
+    private String secondCityLat, secondCityLon;
+    private TextView thought;
+    private View btnMediaPrev, btnMediaPlayPause, btnMediaNext;
+    private View nowPlayingCard;
+    private ImageView nowPlayingArt;
+    private TextView nowPlayingTitle;
+    private NowPlaying nowPlayingHelper;
     private View clockBlock;
     private View btnInputs;
     /** config show_inputs_pill: false keeps the Inputs pill hidden even when the TV has inputs. */
@@ -455,9 +470,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         weatherBlock = findViewById(R.id.weatherBlock);
         weatherIcon = findViewById(R.id.weatherIcon);
         weatherTemp = findViewById(R.id.weatherTemp);
+        weatherRange = findViewById(R.id.weatherRange);
         weatherLat = cfg.weatherLat;
         weatherLon = cfg.weatherLon;
         weatherEnabled = !weatherLat.isEmpty() && !weatherLon.isEmpty();
+        secondCityBlock = findViewById(R.id.secondCityBlock);
+        secondCityLabel = findViewById(R.id.secondCityLabel);
+        secondCityClock = findViewById(R.id.secondCityClock);
+        secondCityWeatherIcon = findViewById(R.id.secondCityWeatherIcon);
+        secondCityWeatherTemp = findViewById(R.id.secondCityWeatherTemp);
+        secondCityLat = cfg.secondCityLat;
+        secondCityLon = cfg.secondCityLon;
+        secondCityEnabled = !cfg.secondCityLabel.isEmpty() && !cfg.secondCityTz.isEmpty()
+                && !secondCityLat.isEmpty() && !secondCityLon.isEmpty();
+        if (secondCityEnabled) {
+            secondCityLabel.setText(cfg.secondCityLabel);
+            secondCityClock.setTimeZone(cfg.secondCityTz);
+            secondCityBlock.setVisibility(View.VISIBLE);
+        }
+        thought = findViewById(R.id.thought);
+        if (cfg.showThought) {
+            String line = Thoughts.pick(this, LocalDate.now());
+            if (!line.isEmpty()) {
+                thought.setText("“" + line + "”");
+                thought.setVisibility(View.VISIBLE);
+            }
+        }
         moduleCards = cfg.moduleCards;
         hiddenApps = new HashSet<>(cfg.hiddenApps);
 
@@ -606,6 +644,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         bluetoothPill = new BluetoothPill(this, this::updateBluetoothLabel);
         if (!bluetoothPill.available()) btnBluetooth.setVisibility(View.GONE);
         else bluetoothPill.start();
+        btnMediaPrev = findViewById(R.id.btnMediaPrev);
+        btnMediaPlayPause = findViewById(R.id.btnMediaPlayPause);
+        btnMediaNext = findViewById(R.id.btnMediaNext);
+        nowPlayingCard = findViewById(R.id.nowPlayingCard);
+        nowPlayingArt = findViewById(R.id.nowPlayingArt);
+        nowPlayingTitle = findViewById(R.id.nowPlayingTitle);
+        nowPlayingHelper = new NowPlaying(this, this::updateNowPlaying);
+        btnMediaPrev.setOnClickListener(v -> nowPlayingHelper.previous());
+        btnMediaPlayPause.setOnClickListener(v -> nowPlayingHelper.playPause());
+        btnMediaNext.setOnClickListener(v -> nowPlayingHelper.next());
         launcherSettingsButton = cfg.launcherSettingsButton;
         if (launcherSettingsButton) {
             ((TextView) btnSettings).setText(R.string.launcher_settings);
@@ -684,8 +732,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
+        // The media buttons live in their own row (nowPlayingCard), not the top-bar pill row, so they
+        // skip pillKeys (that Left/Right boundary logic is specific to the top bar) but still get the
+        // same focus-zoom as every other pill.
         if (advancedEffects) {
-            for (View button : new View[]{btnInputs, btnWifi, btnBluetooth, btnReorder, btnLibraryTop, btnSettings}) {
+            for (View button : new View[]{btnInputs, btnWifi, btnBluetooth, btnMediaPrev, btnMediaPlayPause,
+                    btnMediaNext, btnReorder, btnLibraryTop, btnSettings}) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
                         .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
                         .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start());
@@ -859,7 +911,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             pillsShown = true;
         }
         if (showStats) startStats();
-        if (weatherEnabled) startWeather();
+        if (weatherEnabled || secondCityEnabled) startWeather();
+        nowPlayingHelper.start();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1038,6 +1091,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.removeCallbacks(minuteTick);
         stopStats();
         stopWeather();
+        nowPlayingHelper.stop();
         if (diya != null) diya.stop();
         cancelPendingFocusScroll();
         // Nothing of ours stays on screen over another app; an undecided prompt simply returns next time.
@@ -1943,15 +1997,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override
             public void run() {
                 if (weatherBg != bg) return;
-                WeatherWidget.Result result = WeatherWidget.fetch(weatherLat, weatherLon);
-                if (result != null) {
-                    handler.post(() -> {
-                        if (weatherBg != bg || weatherBlock == null) return;
-                        weatherIcon.setImageResource(WeatherWidget.iconRes(result.code));
+                WeatherWidget.Result result = weatherEnabled ? WeatherWidget.fetch(weatherLat, weatherLon) : null;
+                WeatherWidget.Result secondResult = secondCityEnabled
+                        ? WeatherWidget.fetch(secondCityLat, secondCityLon) : null;
+                handler.post(() -> {
+                    if (weatherBg != bg) return;
+                    if (result != null && weatherBlock != null) {
+                        weatherIcon.setImageResource(WeatherWidget.iconRes(result));
                         weatherTemp.setText(getString(R.string.weather_temp, Math.round(result.tempC)));
+                        weatherRange.setText(getString(R.string.weather_range, result.maxC, result.minC));
                         weatherBlock.setVisibility(View.VISIBLE);
-                    });
-                }
+                    }
+                    if (secondResult != null && secondCityWeatherIcon != null) {
+                        secondCityWeatherIcon.setImageResource(WeatherWidget.iconRes(secondResult));
+                        secondCityWeatherTemp.setText(getString(R.string.weather_temp, Math.round(secondResult.tempC)));
+                        secondCityWeatherIcon.setVisibility(View.VISIBLE);
+                        secondCityWeatherTemp.setVisibility(View.VISIBLE);
+                    }
+                });
                 if (weatherBg == bg) bg.postDelayed(this, WEATHER_MS);
             }
         });
@@ -2472,6 +2535,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             btnBluetooth.setContentDescription(btnBluetooth.getText());
             btnBluetooth.setText(null);
         }
+    }
+
+    /** Fills in the now-playing row (art, title, play/pause icon) or hides it when nothing is playing.
+     *  Lives in the header's right column, not the dock's layout flow, so it never has to touch the
+     *  top shelf's position. */
+    private void updateNowPlaying() {
+        boolean has = nowPlayingHelper.hasSession();
+        nowPlayingCard.setVisibility(has ? View.VISIBLE : View.GONE);
+        if (!has) return;
+        CharSequence title = nowPlayingHelper.title();
+        nowPlayingTitle.setText(TextUtils.isEmpty(title) ? getString(R.string.app_name) : title);
+        Bitmap art = nowPlayingHelper.art();
+        if (art != null) nowPlayingArt.setImageBitmap(art);
+        nowPlayingArt.setVisibility(art != null ? View.VISIBLE : View.GONE);
+        ((TextView) btnMediaPlayPause).setCompoundDrawablesRelativeWithIntrinsicBounds(
+                nowPlayingHelper.isPlaying() ? R.drawable.ic_media_pause : R.drawable.ic_media_play, 0, 0, 0);
     }
 
     /** config.xml icon_only_buttons. */
