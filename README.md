@@ -35,6 +35,10 @@ TV: TCL G07 (Google TV, Android 11).
 - **Icon-only top bar** — Wi-Fi / Bluetooth / Inputs / Settings collapse to small round icon buttons
   instead of full labeled pills, for a cleaner header.
 - **Serif display clock** (Cormorant Garamond) in place of the default sans clock face.
+- **Video wallpaper** — a theme's `wallpaper.mp4` loops muted behind the whole home screen instead of
+  a still image, decoded straight to a `TextureView` so it costs nothing extra once it's playing.
+- **Vinyl-mode screensaver** — when something's playing, the idle clock swaps the drifting digits for
+  the current track's album art spinning slowly like a record, with the title underneath.
 
 ## Layout
 
@@ -76,6 +80,10 @@ TV_HOST=<tv ip> tools/theme.sh themes/<name>
 
 **Now playing in the header** — album art, track name, and transport controls next to the clock.
 ![Album art, track name, and transport controls next to the clock](docs/screenshots/home-now-playing.png)
+
+**Video wallpaper, live demo** — `themes/anime-video/wallpaper.mp4` looping behind the home screen
+(the gif below is the raw video content, not a screen recording).
+![The looping video wallpaper's content, a close-up on a character blinking](docs/screenshots/wallpaper-video-demo.gif)
 
 ## Credit
 

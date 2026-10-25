@@ -1,0 +1,13 @@
+{
+  "wallpaper": true,
+  "ambient_glow": false,
+  "icon_only_buttons": true,
+  "icon_only_inputs": true,
+  "show_taglines": true,
+  "weather_lat": "12.97",
+  "weather_lon": "77.59",
+  "second_city_label": "New York",
+  "second_city_tz": "America/New_York",
+  "second_city_lat": "40.71",
+  "second_city_lon": "-74.01"
+}
