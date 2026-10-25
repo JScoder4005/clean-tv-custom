@@ -59,4 +59,65 @@
             android:letterSpacing="0.14"
             android:textAllCaps="true" />
     </LinearLayout>
+
+    <!-- Vinyl mode: something is playing (NowPlaying), so the idle clock becomes a slowly spinning
+         record instead of just drifting digits. Gone otherwise; dreamContent above covers that case. -->
+    <TextClock
+        android:id="@+id/dreamVinylClock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:layout_margin="64dp"
+        android:format12Hour="h:mm"
+        android:format24Hour="HH:mm"
+        android:textColor="#B3FFFFFF"
+        android:textSize="28sp"
+        android:fontFamily="@string/font_light"
+        android:letterSpacing="-0.02"
+        android:includeFontPadding="false"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/dreamVinylArt"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="140dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:id="@+id/dreamVinylText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="468dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/dreamVinylTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="560dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="#F2FFFFFF"
+            android:textSize="22sp"
+            android:fontFamily="@string/font_medium" />
+
+        <TextView
+            android:id="@+id/dreamVinylArtist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:maxWidth="560dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="#99FFFFFF"
+            android:textSize="15sp"
+            android:fontFamily="@string/font_regular" />
+    </LinearLayout>
 </FrameLayout>

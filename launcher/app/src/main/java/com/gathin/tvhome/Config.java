@@ -78,6 +78,8 @@ final class Config {
     final String secondCityLabel, secondCityTz, secondCityLat, secondCityLon;
     /** A daily line under the date, from res/raw/thoughts.json (config.xml, show_thought). */
     final boolean showThought;
+    /** A looping, muted wallpaper.mp4 pushed by a theme; wins over any static wallpaper when present. */
+    final File wallpaperVideo;
     final String sourcePanelService;
     final String sourcePanelAction;
     /** One int extra for the source panel, "name=value" (config.xml source_panel_extra); empty for none. */
@@ -211,7 +213,7 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding,
                    Map<String, String> appTaglines, boolean showTaglines, String weatherLat, String weatherLon,
                    String secondCityLabel, String secondCityTz, String secondCityLat, String secondCityLon,
-                   boolean showThought) {
+                   boolean showThought, File wallpaperVideo) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -293,6 +295,7 @@ final class Config {
         this.secondCityLat = secondCityLat;
         this.secondCityLon = secondCityLon;
         this.showThought = showThought;
+        this.wallpaperVideo = wallpaperVideo;
     }
 
     /** A known glow_style, or radial (the default) for anything else. */
@@ -498,6 +501,12 @@ final class Config {
             wallpaper = chosen.isEmpty() ? null : chosen.get(0);
             wallpaperEnabled = !chosen.isEmpty();
         }
+        // wallpaper.mp4, same on/off switch as the static picture (wallpaper): a looping, muted video
+        // wins over any static image or collection when present, since pushing one is clearly deliberate.
+        File wallpaperVideo = dir != null ? new File(dir, "wallpaper.mp4") : null;
+        if (wallpaperVideo != null && !(wallpaperVideo.isFile() && wallpaperVideo.length() > 0)) wallpaperVideo = null;
+        if (!wallpaperEnabled) wallpaperVideo = null;
+        if (wallpaperVideo != null) wallpapers.clear();
         // A festive skin comes only from a theme; config.xml has no festival.
         Festival festival = json == null ? Festival.NONE : Festival.parse(string(json, "festival", ""),
                 string(json, "festival_until", ""), string(json, "greeting", ""), string(json, "accent_color", ""));
@@ -512,7 +521,7 @@ final class Config {
                 festival, inputKeycodes, appKeys, stockHomeRedirect, json == null ? Collections.emptyList() : raceCalendar(json), cinematic, ambientGlow, appGlow,
                 Math.max(0, idleClockMinutes), keyFilter, dockGlass, glowStyle, wallpaperCaptions, handleViewInputs, tileMenu, dockEvenPadding,
                 packageMap(appTaglines), showTaglines, weatherLat, weatherLon,
-                secondCityLabel, secondCityTz, secondCityLat, secondCityLon, showThought);
+                secondCityLabel, secondCityTz, secondCityLat, secondCityLon, showThought, wallpaperVideo);
     }
 
     /**

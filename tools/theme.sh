@@ -78,6 +78,14 @@ if [ -f "$THEME/wallpaper.jpg" ]; then
 else
   tv "$(del wallpaper.jpg)" >/dev/null
 fi
+# wallpaper.mp4: a looping, muted video wallpaper; wins over wallpaper.jpg/wallpapers/ when present
+# (see Config.java). Can be a large file, chunked by b64push like everything else here.
+if [ -f "$THEME/wallpaper.mp4" ]; then
+  "$PY" -I b64push.py "$THEME/wallpaper.mp4" "$TMP-wallpaper.mp4"
+  tv "$(put wallpaper.mp4)"
+else
+  tv "$(del wallpaper.mp4)" >/dev/null
+fi
 tv "mkdir -p $DIR/wallpapers 2>/dev/null; rm -f $DIR/wallpapers/*.jpg $DIR/wallpapers/*.jpeg $DIR/wallpapers/*.png $DIR/wallpapers/*.webp $DIR/wallpapers/*.JPG $DIR/wallpapers/*.JPEG $DIR/wallpapers/*.PNG $DIR/wallpapers/*.WEBP 2>/dev/null; content delete --uri $URI/wallpapers 2>/dev/null" >/dev/null
 if [ -d "$THEME/wallpapers" ]; then
   for IMAGE in "$THEME"/wallpapers/*; do
