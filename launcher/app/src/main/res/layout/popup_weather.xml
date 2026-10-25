@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tap the weather chip: a full forecast card (current conditions, next 6 hours, next 5 days,
+     sunrise/sunset), the way MainActivity#showInputs opens the Inputs menu. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/panel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/glass_panel"
+    android:padding="20dp"
+    android:elevation="12dp">
+
+    <!-- Current conditions: icon, temperature, condition word, today's high/low. -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/weatherCardIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@null" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/weatherCardTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#F2FFFFFF"
+                android:textSize="34sp"
+                android:fontFamily="@string/font_clock"
+                android:includeFontPadding="false" />
+
+            <TextView
+                android:id="@+id/weatherCardCondition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B3FFFFFF"
+                android:textSize="13sp"
+                android:fontFamily="@string/font_medium" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/weatherCardRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:textColor="#99FFFFFF"
+            android:textSize="14sp"
+            android:fontFamily="@string/font_regular" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="14dp"
+        android:background="#1FFFFFFF" />
+
+    <!-- Next 6 hours. One item_weather_hour per cell, filled in code. -->
+    <LinearLayout
+        android:id="@+id/weatherCardHours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
+    <View
+        android:id="@+id/weatherCardDaysDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="14dp"
+        android:background="#1FFFFFFF" />
+
+    <!-- Next 5 days. One item_weather_day per row, filled in code. -->
+    <LinearLayout
+        android:id="@+id/weatherCardDays"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/weatherCardSun"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_sunrise"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/weatherCardSunrise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="#99FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="@string/font_regular" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_sunset"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/weatherCardSunset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="#99FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="@string/font_regular" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

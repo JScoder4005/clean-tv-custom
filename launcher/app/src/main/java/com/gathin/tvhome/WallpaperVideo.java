@@ -109,14 +109,14 @@ final class WallpaperVideo {
         }
     }
 
+    /** Fully releases the hardware decoder, not just pauses: Home keeps its TextureView (and surface)
+     *  across a background/foreground cycle, so a paused-but-not-released MediaPlayer would sit on a
+     *  decoder slot for as long as whatever app is in front — on a TV chip with only one or two, that
+     *  starves its video playback instead of freeing the hardware for it. start() reopens from the
+     *  still-live surface texture when Home comes back. */
     void stop() {
         active = false;
-        if (player != null && prepared) {
-            try {
-                player.pause();
-            } catch (IllegalStateException ignored) {
-            }
-        }
+        releasePlayer();
     }
 
     void close() {

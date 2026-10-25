@@ -167,6 +167,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean advancedEffects;
     private TextView greeting;
     private View weatherBlock;
+    private WeatherWidget.Result lastWeatherResult;
     private ImageView weatherIcon;
     private TextView weatherTemp;
     private TextView weatherRange;
@@ -470,6 +471,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         vpnApp = cfg.vpnApp;
         weatherBlock = findViewById(R.id.weatherBlock);
+        weatherBlock.setOnClickListener(v -> showWeatherCard());
+        weatherBlock.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                firstTopButton().requestFocus();
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                focusTile(lastFocused % COLUMNS);
+                return true;
+            }
+            return keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
+        });
         weatherIcon = findViewById(R.id.weatherIcon);
         weatherTemp = findViewById(R.id.weatherTemp);
         weatherRange = findViewById(R.id.weatherRange);
@@ -718,8 +732,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                // Back to the dock tile Up came from, not wherever the focus finder lands.
-                focusTile(lastFocused % COLUMNS);
+                // The weather chip sits right under the top bar when it's showing; otherwise back to
+                // the dock tile Up came from, not wherever the focus finder lands.
+                if (weatherBlock.getVisibility() == View.VISIBLE) weatherBlock.requestFocus();
+                else focusTile(lastFocused % COLUMNS);
                 return true;
             }
             int firstButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
@@ -738,8 +754,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // skip pillKeys (that Left/Right boundary logic is specific to the top bar) but still get the
         // same focus-zoom as every other pill.
         if (advancedEffects) {
-            for (View button : new View[]{btnInputs, btnWifi, btnBluetooth, btnMediaPrev, btnMediaPlayPause,
-                    btnMediaNext, btnReorder, btnLibraryTop, btnSettings}) {
+            for (View button : new View[]{btnInputs, btnWifi, btnBluetooth, weatherBlock, btnMediaPrev,
+                    btnMediaPlayPause, btnMediaNext, btnReorder, btnLibraryTop, btnSettings}) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
                         .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
                         .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start());
@@ -2008,6 +2024,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 handler.post(() -> {
                     if (weatherBg != bg) return;
                     if (result != null && weatherBlock != null) {
+                        lastWeatherResult = result;
                         weatherIcon.setImageResource(WeatherWidget.iconRes(result));
                         weatherTemp.setText(getString(R.string.weather_temp, Math.round(result.tempC)));
                         weatherRange.setText(getString(R.string.weather_range, result.maxC, result.minC));
@@ -2966,6 +2983,64 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int alignment = getResources().getBoolean(R.bool.rtl_menu_bar) != underGear ? Gravity.END : Gravity.START;
         dropIn(popup, panel, anchor, alignment);
         rows.getChildAt(0).requestFocus();
+    }
+
+    /** Tap the weather chip: current conditions, the next 6 hours, the next 5 days, sunrise/sunset —
+     *  the chip's own last-fetched WeatherWidget.Result, no extra network call on open. */
+    private void showWeatherCard() {
+        WeatherWidget.Result r = lastWeatherResult;
+        if (r == null) return;
+        View panel = getLayoutInflater().inflate(R.layout.popup_weather, root, false);
+        ((ImageView) panel.findViewById(R.id.weatherCardIcon)).setImageResource(WeatherWidget.iconRes(r));
+        ((TextView) panel.findViewById(R.id.weatherCardTemp)).setText(getString(R.string.weather_temp, Math.round(r.tempC)));
+        ((TextView) panel.findViewById(R.id.weatherCardCondition)).setText(WeatherWidget.conditionRes(r.code));
+        ((TextView) panel.findViewById(R.id.weatherCardRange)).setText(getString(R.string.weather_range, r.maxC, r.minC));
+
+        LinearLayout hours = panel.findViewById(R.id.weatherCardHours);
+        for (WeatherWidget.Hour h : r.hours) {
+            View cell = getLayoutInflater().inflate(R.layout.item_weather_hour, hours, false);
+            ((TextView) cell.findViewById(R.id.time)).setText(h.time);
+            ((ImageView) cell.findViewById(R.id.icon)).setImageResource(WeatherWidget.iconRes(h.code, h.day));
+            ((TextView) cell.findViewById(R.id.temp)).setText(getString(R.string.weather_temp, Math.round(h.tempC)));
+            hours.addView(cell);
+        }
+
+        LinearLayout days = panel.findViewById(R.id.weatherCardDays);
+        boolean hasDays = !r.days.isEmpty();
+        panel.findViewById(R.id.weatherCardDaysDivider).setVisibility(hasDays ? View.VISIBLE : View.GONE);
+        days.setVisibility(hasDays ? View.VISIBLE : View.GONE);
+        for (WeatherWidget.Day d : r.days) {
+            View row = getLayoutInflater().inflate(R.layout.item_weather_day, days, false);
+            ((TextView) row.findViewById(R.id.weekday)).setText(d.weekday);
+            ((ImageView) row.findViewById(R.id.icon)).setImageResource(WeatherWidget.iconRes(d.code, true));
+            ((TextView) row.findViewById(R.id.max)).setText(getString(R.string.weather_temp, d.maxC));
+            ((TextView) row.findViewById(R.id.min)).setText(getString(R.string.weather_temp, d.minC));
+            days.addView(row);
+        }
+
+        boolean hasSun = !r.sunrise.isEmpty() || !r.sunset.isEmpty();
+        panel.findViewById(R.id.weatherCardSun).setVisibility(hasSun ? View.VISIBLE : View.GONE);
+        TextView sunrise = panel.findViewById(R.id.weatherCardSunrise), sunset = panel.findViewById(R.id.weatherCardSunset);
+        sunrise.setText(r.sunrise);
+        ((View) sunrise.getParent()).setVisibility(r.sunrise.isEmpty() ? View.GONE : View.VISIBLE);
+        sunset.setText(r.sunset);
+        ((View) sunset.getParent()).setVisibility(r.sunset.isEmpty() ? View.GONE : View.VISIBLE);
+
+        // Anchored to a chip near the screen's right edge: hang the card from its end so a wide card
+        // (the hour strip) grows left, not off the right edge.
+        PopupWindow popup = glassPopup(panel, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dropIn(popup, panel, weatherBlock, Gravity.END);
+        panel.setFocusableInTouchMode(true);
+        panel.requestFocus();
+        panel.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN
+                    && (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+                    || keyCode == KeyEvent.KEYCODE_ENTER)) {
+                popup.dismiss();
+                return true;
+            }
+            return false;
+        });
     }
 
     private PopupWindow glassPopup(View panel, int width) {

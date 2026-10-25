@@ -502,11 +502,13 @@ final class Config {
             wallpaperEnabled = !chosen.isEmpty();
         }
         // wallpaper.mp4, same on/off switch as the static picture (wallpaper): a looping, muted video
-        // wins over any static image or collection when present, since pushing one is clearly deliberate.
+        // drawn on top of the static image/collection (MainActivity constructs WallpaperVideo before
+        // WallpaperPlayer, which puts the video above it), not in place of it. The static layer is the
+        // fallback if the video fails to open or decode for any reason — better a still picture than a
+        // blank screen, since a codec rejecting one specific file is silent by nature (#?).
         File wallpaperVideo = dir != null ? new File(dir, "wallpaper.mp4") : null;
         if (wallpaperVideo != null && !(wallpaperVideo.isFile() && wallpaperVideo.length() > 0)) wallpaperVideo = null;
         if (!wallpaperEnabled) wallpaperVideo = null;
-        if (wallpaperVideo != null) wallpapers.clear();
         // A festive skin comes only from a theme; config.xml has no festival.
         Festival festival = json == null ? Festival.NONE : Festival.parse(string(json, "festival", ""),
                 string(json, "festival_until", ""), string(json, "greeting", ""), string(json, "accent_color", ""));
