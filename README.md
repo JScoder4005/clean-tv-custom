@@ -68,9 +68,14 @@ TV_HOST=<tv ip> tools/theme.sh themes/<name>
 
 ## Screenshots
 
-| Home with a custom wallpaper | Flat black, no wallpaper | Now playing in the header |
-|---|---|---|
-| ![Home screen with a custom wallpaper, weather, second city, and thought of the day](docs/screenshots/home-tanjiro-wallpaper.png) | ![Home screen on a plain black background with the ambient glow off](docs/screenshots/home-flat-dark.png) | ![Album art, track name, and transport controls next to the clock](docs/screenshots/home-now-playing.png) |
+**Home with a custom wallpaper** — weather, second city, and thought of the day in the header.
+![Home screen with a custom wallpaper, weather, second city, and thought of the day](docs/screenshots/home-tanjiro-wallpaper.png)
+
+**Flat black, no wallpaper** — ambient glow off, for a plain dark look.
+![Home screen on a plain black background with the ambient glow off](docs/screenshots/home-flat-dark.png)
+
+**Now playing in the header** — album art, track name, and transport controls next to the clock.
+![Album art, track name, and transport controls next to the clock](docs/screenshots/home-now-playing.png)
 
 ## Credit
 
