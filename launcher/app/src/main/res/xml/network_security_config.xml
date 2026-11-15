@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cleartext HTTP is allowed only to the Pi's twin bridge on the home LAN; every other host stays HTTPS-only.
+     Add the Pi's IP as another <domain> if luffy.local does not resolve on this TV. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">luffy.local</domain>
+    </domain-config>
+</network-security-config>
