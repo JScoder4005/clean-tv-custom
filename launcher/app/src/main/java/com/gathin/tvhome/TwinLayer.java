@@ -17,12 +17,12 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 /**
  * The optional 3D "home twin": a page served by the Pi's twin bridge, shown as a layer behind the dock.
@@ -73,10 +73,14 @@ final class TwinLayer {
             if (dir == null) return TwinConfig.OFF;
             File f = new File(dir, Config.FILE_NAME);
             if (!f.isFile()) return TwinConfig.OFF;
-            try (FileInputStream in = new FileInputStream(f)) {
-                return TwinConfig.parse(new String(in.readAllBytes(), StandardCharsets.UTF_8));
+            // No InputStream.readAllBytes(): that is API 33 and this runs on Android 11 TVs.
+            try (FileInputStream in = new FileInputStream(f); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                byte[] buf = new byte[4096];
+                for (int n; (n = in.read(buf)) > 0; ) out.write(buf, 0, n);
+                return TwinConfig.parse(out.toString("UTF-8"));
             }
-        } catch (IOException | RuntimeException e) {
+        } catch (IOException | RuntimeException | LinkageError e) {
+            // Whatever goes wrong here, Home must still start: the twin is optional.
             Log.w(TAG, "could not read twin config", e);
             return TwinConfig.OFF;
         }
