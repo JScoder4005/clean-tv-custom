@@ -1,0 +1,30 @@
+import java.util.Properties
+
+plugins { id 'com.android.application' }
+
+// The bridge address and token are personal: they come from local.properties (git-ignored), never from the repo.
+def local = new Properties()
+rootProject.file('local.properties').withInputStream { local.load(it) }
+
+android {
+    namespace 'dev.uday.luffy'
+    compileSdk 34
+    buildFeatures { aidl false; buildConfig true }
+    defaultConfig {
+        applicationId 'dev.uday.luffy'; minSdk 26; targetSdk 34; versionCode 1; versionName '1.0'
+        buildConfigField 'String', 'BRIDGE_URL', "\"${local.getProperty('luffy.url', '')}\""
+        buildConfigField 'String', 'BRIDGE_TOKEN', "\"${local.getProperty('luffy.token', '')}\""
+    }
+    buildTypes { release {
+        minifyEnabled true
+        shrinkResources true
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        signingConfig signingConfigs.debug
+    } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    // Android's stub org.json throws in JVM tests; the real one lets the parsing be tested.
+    testImplementation 'org.json:json:20231013'
+}

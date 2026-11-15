@@ -13,6 +13,7 @@ the core bigger or change how it behaves. You install an add-on only if you want
 | [Capacity Stats](capacity-stats/) | Available/total and used/total RAM; available/total storage | [lionlev21](https://github.com/lionlev21) | Android TV 12 (model private) | None |
 | [Weather](weather/) | The weather for one city: now, US air quality and the next three days, from Open-Meteo (no key) | [@Sumyabazar1](https://github.com/Sumyabazar1) | Hisense SmartTV 4K FFM (lushan), Google TV 12 | `INTERNET` |
 | [Photo Prints](photo-prints/) | Your own photos as a screensaver: dated prints dealt in on a time-of-day sky, and a card that starts the slideshow | [@shivamsingh262](https://github.com/shivamsingh262) | Sony BRAVIA KD-65X82L (Google TV 12) | None |
+| [Luffy](luffy/) | My Raspberry Pi's vital signs and my smart bulb's controls, via a bridge on the Pi | [@udaykumarm](https://github.com/) | TCL G07 (Google TV, Android 11) | `INTERNET` |
 
 A widget, an info tile, a storage or smart-home card: if it can live as its own small app, it can live
 here. See the rules below.

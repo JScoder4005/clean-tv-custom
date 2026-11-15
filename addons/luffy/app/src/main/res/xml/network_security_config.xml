@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cleartext HTTP only to the Pi on the home LAN. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.0.110</domain>
+        <domain includeSubdomains="false">luffy.local</domain>
+    </domain-config>
+</network-security-config>
