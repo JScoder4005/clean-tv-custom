@@ -1,0 +1,29 @@
+{
+  "wallpaper": true,
+  "ambient_glow": false,
+  "icon_only_buttons": true,
+  "icon_only_inputs": true,
+  "show_taglines": true,
+  "weather_lat": "13.14",
+  "weather_lon": "78.13",
+  "clock_tz": "Asia/Kolkata",
+  "second_city_label": "New York",
+  "second_city_tz": "America/New_York",
+  "second_city_lat": "40.71",
+  "second_city_lon": "-74.01",
+  "greeting_name": "Clarine :)",
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.google.android.youtube.tv",
+    "in.startv.hotstar",
+    "com.stremio.one"
+  ],
+  "app_keys": [
+    "4062:com.netflix.ninja",
+    "4099:com.amazon.amazonvideo.livingroom",
+    "4065:com.google.android.youtube.tv"
+  ],
+  "dock_glass": true,
+  "home_idle_clock_minutes": 5
+}
