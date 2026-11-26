@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * The launcher's settings: the values in res/values/config.xml, with an optional overlay read from
@@ -356,6 +357,7 @@ final class Config {
         String vpn = res.getString(R.string.vpn_app).trim();
         String weatherLat = res.getString(R.string.weather_lat).trim();
         String weatherLon = res.getString(R.string.weather_lon).trim();
+        String clockTz = res.getString(R.string.clock_tz).trim();
         String secondCityLabel = res.getString(R.string.second_city_label).trim();
         String secondCityTz = res.getString(R.string.second_city_tz).trim();
         String secondCityLat = res.getString(R.string.second_city_lat).trim();
@@ -435,6 +437,7 @@ final class Config {
             vpn = string(json, "vpn_app", vpn);
             weatherLat = string(json, "weather_lat", weatherLat);
             weatherLon = string(json, "weather_lon", weatherLon);
+            clockTz = string(json, "clock_tz", clockTz);
             secondCityLabel = string(json, "second_city_label", secondCityLabel);
             secondCityTz = string(json, "second_city_tz", secondCityTz);
             secondCityLat = string(json, "second_city_lat", secondCityLat);
@@ -512,6 +515,8 @@ final class Config {
         // A festive skin comes only from a theme; config.xml has no festival.
         Festival festival = json == null ? Festival.NONE : Festival.parse(string(json, "festival", ""),
                 string(json, "festival_until", ""), string(json, "greeting", ""), string(json, "accent_color", ""));
+        // Only this process's default zone: every clock and date in the launcher follows it, the system's stays as is.
+        if (Arrays.asList(TimeZone.getAvailableIDs()).contains(clockTz)) TimeZone.setDefault(TimeZone.getTimeZone(clockTz));
 
         return new Config(dock, fillDock, hidden, libraryApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
                 packageMap(appBanners), panelService,

@@ -192,6 +192,9 @@
          theme's config.json ("weather_lat", "weather_lon"). -->
     <string name="weather_lat" translatable="false"></string>
     <string name="weather_lon" translatable="false"></string>
+    <!-- IANA zone id for the launcher's own clock and date, for a TV whose firmware will not change its
+         system time zone. Empty follows the system. Can also be set from a theme's config.json. -->
+    <string name="clock_tz" translatable="false"></string>
     <!-- A second clock for another city: name, IANA zone id, coordinates. Any of the four empty keeps
          it off. Weather for it (if weather_lat/weather_lon are also set) uses the same icons and
          format as the main chip. Can also be set from a theme's config.json. -->
